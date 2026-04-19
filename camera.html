@@ -229,29 +229,6 @@ function drawBar(id,labels,vals){
   document.getElementById(id).innerHTML=tag('svg',attr('viewBox','0 0 '+W+' '+H)+attr('xmlns','http://www.w3.org/2000/svg')+attr('style','width:100%;display:block;'),out);
 }
 
-function drawTypeBar(id,tkeys,tct){
-  var total=0;
-  for(var i=0;i<tkeys.length;i++)total+=tct[tkeys[i]];
-  if(!total)total=1;
-  var maxCnt=tkeys.length>0?tct[tkeys[0]]:1;
-  var html='<div style="display:flex;flex-direction:column;gap:8px;padding:4px 0;">';
-  for(var i=0;i<tkeys.length;i++){
-    var t=tkeys[i],cnt=tct[t],pct=Math.round(cnt/total*100);
-    var barW=Math.round(cnt/maxCnt*100);
-    var col=getColor(t);
-    html+='<div style="display:flex;align-items:center;gap:10px;">'
-      +'<div style="min-width:160px;max-width:160px;font-size:12px;color:#c8d8e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+getLabel(t)+'</div>'
-      +'<div style="flex:1;background:rgba(255,255,255,0.07);border-radius:3px;height:14px;overflow:hidden;">'
-        +'<div style="height:100%;width:'+barW+'%;background:'+col+';border-radius:3px;transition:width 0.4s;"></div>'
-      +'</div>'
-      +'<div style="min-width:50px;text-align:right;font-size:13px;font-weight:700;color:#e8edf5;">'+cnt+'</div>'
-      +'<div style="min-width:36px;text-align:right;font-size:11px;color:#7a94b4;">'+pct+'%</div>'
-    +'</div>';
-  }
-  html+='</div>';
-  document.getElementById(id).innerHTML=html;
-}
-
 function drawDonut(id,labels,vals,colors){
   var total=0;
   for(var i=0;i<vals.length;i++)total+=vals[i];
@@ -340,7 +317,7 @@ function render(evts){
   drawBar('barWrap',wkeys,wkeys.map(function(k){return wk[k];}));
 
   var tkeys=Object.keys(tct).sort(function(a,b){return tct[b]-tct[a];});
-  drawTypeBar('donutWrap',tkeys,tct);
+  drawDonut('donutWrap',tkeys.map(function(t){return getLabel(t);}),tkeys.map(function(t){return tct[t];}),tkeys.map(function(t){return getColor(t);}));
 
   // Driver table — matches Apple: Driver / Total / Viewed columns
   var dd={};
