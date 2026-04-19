@@ -4,7 +4,7 @@
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Fiore and Sons — Camera Event Dashboard</title>
+<title>Home Motors — Camera Event Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -39,12 +39,6 @@ html, body { background: #0f1f3d; color: #e8edf5; font-family: 'Barlow', sans-se
 .filter-bar { display:flex;gap:8px;flex-wrap:wrap;align-items:center; }
 .filter-btn { background:#1e3452;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:5px 12px;font-size:10px;color:#7a94b4;font-family:'Barlow Condensed',sans-serif;cursor:pointer;letter-spacing:.5px;transition:all .15s; }
 .filter-btn:hover,.filter-btn.active { background:#e8a020;color:#0f1f3d;border-color:#e8a020; }
-.group-btn { background:#1e3452;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:6px 16px;font-size:11px;color:#7a94b4;font-family:'Barlow Condensed',sans-serif;cursor:pointer;letter-spacing:.5px;transition:all .15s;font-weight:600; }
-.group-btn:hover { background:#244a72;border-color:rgba(255,255,255,0.2); }
-.group-btn.active-all { background:#e8a020;color:#0f1f3d;border-color:#e8a020; }
-.group-btn.active-hd { background:#e05252;color:#fff;border-color:#e05252; }
-.group-btn.active-ld { background:#3db87a;color:#fff;border-color:#3db87a; }
-.group-badge { display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.12);border-radius:10px;padding:1px 7px;font-size:9px;font-weight:700;margin-left:5px;min-width:18px; }
 ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #244a72; border-radius: 2px; }
 @media (min-width: 768px) {
   .page { padding: 20px 28px; gap: 18px; max-width: 1400px; margin: 0 auto; }
@@ -89,17 +83,6 @@ html, body { background: #0f1f3d; color: #e8edf5; font-family: 'Barlow', sans-se
     <div class="kpi k2"><div class="klbl">Viewed</div><div class="kval" id="kU" style="font-size:44px;">--</div><div class="ksub" id="kVR">viewing rate</div></div>
     <div class="kpi k3"><div class="klbl">Avg Events / Driver</div><div class="kval" id="kA">--</div><div class="ksub" id="kAS">active drivers</div></div>
     <div class="kpi k4"><div class="klbl">Most Common Event</div><div class="kval" id="kMC" style="font-size:28px;padding-top:6px;line-height:1.2;">--</div><div class="ksub" id="kMT">--</div></div>
-  </div>
-
-  <!-- Driver Group Filter -->
-  <div class="card" style="padding:12px 16px;background:linear-gradient(135deg,#0d1f3c,#162840);border-color:rgba(232,160,32,0.2);">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#7a94b4;margin-right:2px;font-family:'Barlow Condensed',sans-serif;">Driver Group:</span>
-      <button class="group-btn active-all" data-group="all" id="grpAll">All Drivers <span class="group-badge" id="grpAllCt">--</span></button>
-      <button class="group-btn" data-group="HD" id="grpHD">&#9651; Heavy Duty <span class="group-badge" id="grpHDCt">--</span></button>
-      <button class="group-btn" data-group="LD" id="grpLD">&#9661; Light Duty <span class="group-badge" id="grpLDCt">--</span></button>
-      <div style="margin-left:auto;font-size:9px;color:#4a6480;font-style:italic;">TT vehicles = Heavy Duty</div>
-    </div>
   </div>
 
   <div class="card" style="padding:12px 16px;">
@@ -176,8 +159,8 @@ html, body { background: #0f1f3d; color: #e8edf5; font-family: 'Barlow', sans-se
 // ============================================================
 // CLIENT CONFIGURATION — edit these two lines for each client
 // ============================================================
-var CLIENT_NAME = 'Fiore and Sons';
-var GITHUB_URL   = 'https://raw.githubusercontent.com/jmullins-DEN/fiore-and-sons/main/camera_events.xlsx';
+var CLIENT_NAME = 'Home Motors';
+var GITHUB_URL   = 'https://raw.githubusercontent.com/jmullins-DEN/home-motors/main/camera_events.xlsx';
 // ============================================================
 
 var TC={'HARSH-BRAKE':'#e05252','HARSH_BRAKE':'#e05252','HARD-BRAKING':'#e05252','HARD_BRAKING':'#e05252','SIGN-VIOLATION':'#f5a623','SIGN_VIOLATION':'#f5a623','SIGN-VIOLATIONS':'#f5a623','SIGN_VIOLATIONS':'#f5a623','FOLLOWING-DISTANCE':'#5b8dee','FOLLOWING_DISTANCE':'#5b8dee','AGGREGATED_LANE_SWERVING':'#e056d6','AGGREGATED-LANE-SWERVING':'#e056d6','LANE-DEPARTURE':'#9b59b6','LANE_DEPARTURE':'#9b59b6','FORWARD-CAMERA-OBSTRUCTION':'#7a94b4','FORWARD_CAMERA_OBSTRUCTION':'#7a94b4','BACKING':'#e8943a','BACKING_EVENT':'#e8943a','DRIVER-DROWSINESS':'#8e5ea2','DRIVER_DROWSINESS':'#8e5ea2','DRIVER-DISTRACTION':'#c0392b','DRIVER_DISTRACTION':'#c0392b','SPEEDING-VIOLATIONS':'#e74c3c','SPEEDING_VIOLATIONS':'#e74c3c','SPEEDING-VIOLATION':'#e74c3c','SPEEDING_VIOLATION':'#e74c3c','HARD-TURN':'#16a085','HARD_TURN':'#16a085','TRAFFIC-LIGHT-VIOLATION':'#d35400','TRAFFIC_LIGHT_VIOLATION':'#d35400','DRIVER-STAR':'#f1c40f','DRIVER_STAR':'#f1c40f'};
@@ -261,13 +244,6 @@ function drawDonut(id,labels,vals,colors){
 var currentEvts=[];
 var currentFilter='all';
 var allFilteredEvts=[];
-var currentGroup='all';
-var allBaseEvts=[];
-
-function getDriverGroup(evt){
-  var veh=String(evt.Vehicle||evt['Vehicle #']||evt.Unit||evt['Unit #']||evt.Truck||'').trim().toUpperCase();
-  return veh.indexOf('TT')===0?'HD':'LD';
-}
 
 function render(evts){
   currentEvts=evts;
@@ -399,15 +375,6 @@ function saveStored(evts){
 }
 
 
-function updateGroupCounts(base){
-  var all=base.length;
-  var hd=base.filter(function(e){return getDriverGroup(e)==='HD';}).length;
-  var ld=base.filter(function(e){return getDriverGroup(e)==='LD';}).length;
-  document.getElementById('grpAllCt').textContent=all;
-  document.getElementById('grpHDCt').textContent=hd;
-  document.getElementById('grpLDCt').textContent=ld;
-}
-
 function renderWithDateFilter(allEvts){
   var end=new Date();end.setDate(end.getDate()-3);
   var start=new Date(end);start.setDate(start.getDate()-30);
@@ -415,27 +382,11 @@ function renderWithDateFilter(allEvts){
     var cv=e['Converted To Coaching'];
     return e._d&&e._d>=start&&e._d<=end&&(cv==='YES'||cv==='Yes');
   });
-  allBaseEvts=tr;
   allFilteredEvts=tr;
-  updateGroupCounts(tr);
-  applyGroupAndFilter();
+  applyFilter();
   var fmt=function(x){return x.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});};
   document.getElementById('periodBadge').innerHTML='<b>'+fmt(start)+'</b> – <b>'+fmt(end)+'</b>';
   return tr.length;
-}
-
-function applyGroupAndFilter(){
-  // First apply group filter
-  var grouped;
-  if(currentGroup==='HD'){
-    grouped=allBaseEvts.filter(function(e){return getDriverGroup(e)==='HD';});
-  } else if(currentGroup==='LD'){
-    grouped=allBaseEvts.filter(function(e){return getDriverGroup(e)==='LD';});
-  } else {
-    grouped=allBaseEvts;
-  }
-  allFilteredEvts=grouped;
-  applyFilter();
 }
 
 function applyFilter(){
@@ -467,11 +418,19 @@ function processFile(file){
         o._d=parseDate(o.Datetime);
         newEvts.push(o);
       }
-      // Replace stored data with this upload (cache clears on every page load)
-      saveStored(newEvts);
-      var shown=renderWithDateFilter(newEvts);
+      // Merge with stored data, dedup by key
+      var stored=loadStored();
+      var seen={};
+      for(var i=0;i<stored.length;i++) seen[dedupKey(stored[i])]=true;
+      var added=0;
+      for(var i=0;i<newEvts.length;i++){
+        var k=dedupKey(newEvts[i]);
+        if(!seen[k]){stored.push(newEvts[i]);seen[k]=true;added++;}
+      }
+      saveStored(stored);
+      var shown=renderWithDateFilter(stored);
       var st=document.getElementById('upSt');st.style.display='block';
-      st.textContent='✓ '+file.name+' — '+newEvts.length+' events loaded';
+      st.textContent='✓ '+file.name+' — '+added+' new events added ('+stored.length+' total stored)';
     }catch(err){alert('Error: '+err.message);}
   };
   reader.readAsArrayBuffer(file);
@@ -629,9 +588,6 @@ document.getElementById('driverModal').addEventListener('click', function(e) {
 
 // On load: fetch GitHub file, merge with localStorage, render
 function fetchAndMerge(onDone) {
-  // Clear any previously cached data so every page load starts fresh
-  localStorage.removeItem('den_events');
-
   if (typeof XLSX === 'undefined') {
     var e = document.getElementById('loadErr');
     e.style.display = 'block';
@@ -646,7 +602,8 @@ function fetchAndMerge(onDone) {
   xhr.responseType = 'arraybuffer';
   xhr.timeout = 15000;
   xhr.ontimeout = function() {
-    st.textContent = 'GitHub request timed out — no cached data available';
+    st.textContent = 'GitHub request timed out — loading local data';
+    loadLocal();
     if (onDone) onDone();
   };
   xhr.onload = function() {
@@ -670,17 +627,29 @@ function fetchAndMerge(onDone) {
         st.textContent = '✓ GitHub sync: up to date (' + newEvts.length + ' total events)';
       } catch(e) {
         st.textContent = 'Error reading GitHub file: ' + e.message;
+        loadLocal();
       }
     } else {
-      st.textContent = 'Could not reach GitHub (status ' + xhr.status + ')';
+      st.textContent = 'Could not reach GitHub (status ' + xhr.status + ') — loading local data';
+      loadLocal();
     }
     if (onDone) onDone();
   };
   xhr.onerror = function() {
-    st.textContent = 'Could not reach GitHub — no data available';
+    st.textContent = 'Could not reach GitHub — loading local data';
+    loadLocal();
     if (onDone) onDone();
   };
   xhr.send();
+}
+
+function loadLocal() {
+  var stored = loadStored();
+  if (stored.length > 0) {
+    renderWithDateFilter(stored);
+    document.getElementById('upSt').style.display = 'block';
+    document.getElementById('upSt').textContent = stored.length + ' events loaded from local storage';
+  }
 }
 
 
@@ -692,23 +661,6 @@ document.getElementById('filterBar').addEventListener('click',function(e){
   currentFilter=btn.getAttribute('data-filter');
   applyFilter();
 });
-
-// Group filter buttons
-document.querySelector('[data-group]') && (function(){
-  var grpBtns = document.querySelectorAll('[data-group]');
-  grpBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      currentGroup = this.getAttribute('data-group');
-      grpBtns.forEach(function(b){
-        b.classList.remove('active-all','active-hd','active-ld');
-      });
-      if(currentGroup==='HD') this.classList.add('active-hd');
-      else if(currentGroup==='LD') this.classList.add('active-ld');
-      else this.classList.add('active-all');
-      applyGroupAndFilter();
-    });
-  });
-})();
 
 fetchAndMerge();
 document.getElementById('clientNameDisplay').textContent = CLIENT_NAME;
