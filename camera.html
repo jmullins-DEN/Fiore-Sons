@@ -479,25 +479,29 @@ function updateGroupCounts(base){
 }
 
 function renderWithDateFilter(allEvts){
-  // Show ALL events (no date window)
+  // Rolling 30-day window with a 3-day buffer:
+  // endDate   = today minus 3 days (end of day)
+  // startDate = endDate minus 30 days (start of day)
+  var BUFFER_DAYS=3, WINDOW_DAYS=30;
+  var today=new Date();
+  var endD=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  endD.setDate(endD.getDate()-BUFFER_DAYS);
+  endD.setHours(23,59,59,999);
+  var startD=new Date(endD.getFullYear(),endD.getMonth(),endD.getDate());
+  startD.setDate(startD.getDate()-WINDOW_DAYS);
+  startD.setHours(0,0,0,0);
   var tr=allEvts.filter(function(e){
     var cv=e['Converted To Coaching'];
-    return (cv==='YES'||cv==='Yes');
+    if(!(cv==='YES'||cv==='Yes')) return false;
+    if(!e._d) return false;
+    return e._d>=startD && e._d<=endD;
   });
   allBaseEvts=tr;
   allFilteredEvts=tr;
   updateGroupCounts(tr);
   applyGroupAndFilter();
   var fmt=function(x){return x.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});};
-  // Compute actual span from data for the period badge
-  var dated=tr.filter(function(e){return e._d;}).map(function(e){return e._d;});
-  if(dated.length){
-    var minD=new Date(Math.min.apply(null,dated));
-    var maxD=new Date(Math.max.apply(null,dated));
-    document.getElementById('periodBadge').innerHTML='<b>'+fmt(minD)+'</b> – <b>'+fmt(maxD)+'</b>';
-  } else {
-    document.getElementById('periodBadge').innerHTML='All Time';
-  }
+  document.getElementById('periodBadge').innerHTML='<b>'+fmt(startD)+'</b> – <b>'+fmt(endD)+'</b>';
   return tr.length;
 }
 
