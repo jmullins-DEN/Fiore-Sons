@@ -546,8 +546,7 @@ function processFile(file){
       }
       if(hi<0)hi=0;
       var hdrs=raw[hi],newEvts=[];
-      // Build case-insensitive header lookup (handles 'Time ', 'TIME', etc.)
-      var hMap={}; // lowercased trimmed -> original key
+      var hMap={};
       for(var k=0;k<hdrs.length;k++){
         var key=hdrs[k]; if(key==null) continue;
         hMap[String(key).trim().toLowerCase()] = key;
@@ -555,19 +554,14 @@ function processFile(file){
       var timeKey   = hMap['time'] || hMap['datetime'];
       var typeKey   = hMap['event type'] || hMap['behaviors'] || hMap['type'];
       var statusKey = hMap['status'] || hMap['coaching status'];
-      // Treat as Samsara if it looks like a coaching export
       var isSamsara = !!(timeKey && (typeKey || statusKey));
       for(var i=hi+1;i<raw.length;i++){
         if(!raw[i]||!raw[i][0])continue;
         var o={};
         for(var j=0;j<hdrs.length;j++) o[hdrs[j]]=raw[i][j];
         if(isSamsara){
-          // Map Samsara columns to the report's expected schema
           o.Datetime = (timeKey ? o[timeKey] : '') || '';
           o.Type     = (typeKey ? o[typeKey] : '') || '';
-          // Status mapping (case-insensitive):
-          //   'Coached' (anything starting with 'coach' that isn't 'need...') => viewed
-          //   'Need Coaching' / 'Needs Coaching' / blank / anything else => unviewed
           var stRaw = statusKey ? String(o[statusKey]||'').trim() : '';
           var st = stRaw.toLowerCase();
           var isCoached = (st==='coached' || (st.indexOf('coach')===0 && st.indexOf('need')<0));
@@ -756,6 +750,13 @@ function fetchAndMerge(onDone) {
     var newEvts = EMBEDDED_EVENTS.map(function(e){
       var o = {};
       for (var k in e) if (Object.prototype.hasOwnProperty.call(e,k)) o[k] = e[k];
+      // Apply Samsara Status mapping so coached/need-coaching is honored
+      // 'Coached' (case-insensitive) => viewed; 'Need Coaching'/anything else => unviewed
+      var stRaw = String(o.Status || o['Coaching Status'] || '').trim();
+      var st = stRaw.toLowerCase();
+      var isCoached = (st==='coached' || (st.indexOf('coach')===0 && st.indexOf('need')<0));
+      o['Converted To Coaching'] = 'YES';
+      o['Coaching Completed At'] = isCoached ? '1' : '';
       o._d = parseDate(o.Datetime);
       return o;
     });
