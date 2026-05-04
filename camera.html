@@ -546,19 +546,33 @@ function processFile(file){
       }
       if(hi<0)hi=0;
       var hdrs=raw[hi],newEvts=[];
-      var isSamsara = hdrs.indexOf('Time')>=0 && hdrs.indexOf('Event Type')>=0;
+      // Build case-insensitive header lookup (handles 'Time ', 'TIME', etc.)
+      var hMap={}; // lowercased trimmed -> original key
+      for(var k=0;k<hdrs.length;k++){
+        var key=hdrs[k]; if(key==null) continue;
+        hMap[String(key).trim().toLowerCase()] = key;
+      }
+      var timeKey   = hMap['time'] || hMap['datetime'];
+      var typeKey   = hMap['event type'] || hMap['behaviors'] || hMap['type'];
+      var statusKey = hMap['status'] || hMap['coaching status'];
+      // Treat as Samsara if it looks like a coaching export
+      var isSamsara = !!(timeKey && (typeKey || statusKey));
       for(var i=hi+1;i<raw.length;i++){
         if(!raw[i]||!raw[i][0])continue;
         var o={};
         for(var j=0;j<hdrs.length;j++) o[hdrs[j]]=raw[i][j];
         if(isSamsara){
           // Map Samsara columns to the report's expected schema
-          o.Datetime = o['Time']||'';
-          o.Type = o['Event Type']||'';
-          // Status: 'Coached' => viewed; 'Need Coaching' or anything else => unviewed
-          var st = String(o['Status']||'').trim();
+          o.Datetime = (timeKey ? o[timeKey] : '') || '';
+          o.Type     = (typeKey ? o[typeKey] : '') || '';
+          // Status mapping (case-insensitive):
+          //   'Coached' (anything starting with 'coach' that isn't 'need...') => viewed
+          //   'Need Coaching' / 'Needs Coaching' / blank / anything else => unviewed
+          var stRaw = statusKey ? String(o[statusKey]||'').trim() : '';
+          var st = stRaw.toLowerCase();
+          var isCoached = (st==='coached' || (st.indexOf('coach')===0 && st.indexOf('need')<0));
           o['Converted To Coaching'] = 'YES';
-          o['Coaching Completed At'] = (st==='Coached') ? '1' : '';
+          o['Coaching Completed At'] = isCoached ? '1' : '';
         }
         o._d=parseDate(o.Datetime);
         newEvts.push(o);
